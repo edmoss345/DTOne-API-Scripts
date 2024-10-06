@@ -46,10 +46,10 @@ PRODUCT ID: The product ID for the payment.
 CREDIT PARTY MOBILE NUMBER: The mobile number to which the payment is sent.
 Make Payment with Script: A boolean (True/False) column to indicate whether to send payment for that row.
 
-Logging
+### Logging
 A log of the payment transactions is saved as transaction_log.xlsx. It includes the transaction number, mobile number, status, external ID, response ID, and response message.
 
-How to Run
+### How to Run
 Ensure your api_credentials.json file, the Excel file with payment data, and the send_payments.py script are in the same directory.
 
 Run the script using Python:
@@ -62,18 +62,19 @@ Load the API credentials from api_credentials.json.
 Read payment data from the Excel file.
 Send a payment request for each row flagged for payment.
 Log the transaction status and responses in a new Excel file (transaction_log.xlsx).
-Output
+
+### Output
 Console Output: The script will print information about each transaction, indicating whether the payment request was successful or failed.
 
 Excel Log: A file called transaction_log.xlsx will be generated, containing a log of all payment transactions.
 
-Error Handling
+### Error Handling
 If a payment request fails (e.g., the API returns a non-201 status code), the error message and the status code will be logged in the console and the log file.
 
-Notes
+### Notes
 The script uses HTTP Basic Authentication with credentials stored in api_credentials.json.
 It is important to review and update the Excel file before running the script to ensure only intended payments are made.
 Be cautious with the auto_confirm parameter in the payload to avoid unintended payments.
 
-License
+### License
 This project is licensed under the MIT License.

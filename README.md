@@ -16,19 +16,10 @@ Before running the script, ensure you have the following:
 
 It is recommended to run the script within a Python virtual environment to manage dependencies. To set up and activate a virtual environment:
 
-### Create a virtual environment
-python -m venv .venv
-
-### Activate the virtual environment (Windows)
-.venv\Scripts\activate
-
-### Activate the virtual environment (Mac/Linux)
-source .venv/bin/activate
-
-### Install required dependencies
-pip install pandas requests openpyxl
-
-
+1. Create a virtual environment 'python -m venv .venv'
+2. Activate the virtual environment (Windows) '.venv\Scripts\activate'
+   Activate the virtual environment (Mac/Linux) 'source .venv/bin/activate'
+3. Install required dependencies 'pip install pandas requests openpyxl'
 
 # Send Payments Script (`send_payments.py`)
 

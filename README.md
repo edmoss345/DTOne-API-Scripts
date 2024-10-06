@@ -42,8 +42,11 @@ file_path = 'path/to/your/excel/file.xlsx'
 The Excel file should have the following columns:
 
 NEW EXTERNAL ID: External ID for each transaction.
+
 PRODUCT ID: The product ID for the payment.
+
 CREDIT PARTY MOBILE NUMBER: The mobile number to which the payment is sent.
+
 Make Payment with Script: A boolean (True/False) column to indicate whether to send payment for that row.
 
 ### Logging

@@ -4,9 +4,9 @@
 # Ignore sensitive API credentials
 api_credentials.json
 
-# Ignore generated Excel log files
-transaction_completion_log.xlsx
-transaction_log.xlsx
+# Ignore all Excel files
+*.xlsx
+*.xls
 
-# Ignore any temporary or backup Excel files
+# Ignore temporary or backup Excel files
 *.xlsx~

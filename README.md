@@ -63,7 +63,42 @@ If a payment request fails (e.g., the API returns a non-201 status code), the er
 ### Notes
 The script uses HTTP Basic Authentication with credentials stored in api_credentials.json.
 It is important to review and update the Excel file before running the script to ensure only intended payments are made.
-Be cautious with the auto_confirm parameter in the payload to avoid unintended payments.
 
-### License
-This project is licensed under the MIT License.
+Here’s a README.md for the script you provided:
+
+# Lookup Transactions Script (`bulk_lookup_transaction.py`)
+This Python script retrieves the status of previously initiated transactions from the DTOne API. It reads transaction IDs from an Excel file, makes API requests to retrieve the current status of each transaction, and logs the results in a new Excel file.
+
+## Excel File
+The script reads transaction IDs and mobile numbers from an Excel file (transaction_log.xlsx). Update the script to point to the correct file path by modifying this line:
+
+excel_file_path = "path/to/your/excel/transaction_log.xlsx"
+
+The Excel file should contain the following columns:
+- Response ID: The transaction ID used to query the status.
+- Mobile Number: The mobile number associated with the transaction.
+
+## Output
+The results of the status review will be saved in a new Excel file, transaction_completion_log.xlsx, containing the following columns:
+- Transaction ID: The transaction ID queried from the API.
+- Mobile Number: The associated mobile number from the original Excel file.
+- External ID: The external ID of the transaction (if available).
+- Creation Date: The date the transaction was created.
+- Status Message: The current status message of the transaction.
+- Product Name: The name of the product associated with the transaction.
+
+Console Output: The script will print progress and status messages for each transaction, indicating whether the status was successfully retrieved or if the request failed.
+
+## How to Run
+Ensure your api_credentials.json file and the Excel file with transaction data are in the same directory as the script.
+
+Run the script using Python:
+
+`python review_transactions.py`
+
+The script will:
+
+- Load the API credentials from api_credentials.json.
+- Read the transaction IDs and mobile numbers from the Excel file.
+- Query the DTOne API for each transaction’s status.
+- Save the results in a new Excel file (transaction_completion_log.xlsx).

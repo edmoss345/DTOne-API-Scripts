@@ -55,7 +55,7 @@ The script will:
 ### Output
 Console Output: The script will print information about each transaction, indicating whether the payment request was successful or failed.
 
-Excel Log: A file called transaction_log.xlsx will be generated, containing a log of all payment transactions.
+Excel Log: A file called transaction_log.xlsx will be generated, containing a log of all payment transactions. This is also the default file path used by the 'transaction lookup' script (see below). So that script can be run immediately after to check the status of all transactions.
 
 ### Error Handling
 If a payment request fails (e.g., the API returns a non-201 status code), the error message and the status code will be logged in the console and the log file.
@@ -63,8 +63,6 @@ If a payment request fails (e.g., the API returns a non-201 status code), the er
 ### Notes
 The script uses HTTP Basic Authentication with credentials stored in api_credentials.json.
 It is important to review and update the Excel file before running the script to ensure only intended payments are made.
-
-Here’s a README.md for the script you provided:
 
 # Lookup Transactions Script (`bulk_lookup_transaction.py`)
 This Python script retrieves the status of previously initiated transactions from the DTOne API. It reads transaction IDs from an Excel file, makes API requests to retrieve the current status of each transaction, and logs the results in a new Excel file.

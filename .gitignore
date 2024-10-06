@@ -1,0 +1,12 @@
+# Ignore virtual environment directory
+.venv/
+
+# Ignore sensitive API credentials
+api_credentials.json
+
+# Ignore generated Excel log files
+transaction_completion_log.xlsx
+transaction_log.xlsx
+
+# Ignore any temporary or backup Excel files
+*.xlsx~

@@ -5,16 +5,20 @@ import json
 
 # Load API credentials from a separate JSON file
 with open('api_credentials.json', 'r') as file:
+# with open('api_credentials_test.json', 'r') as file:
     credentials = json.load(file)
     API_KEY = credentials['API_KEY']
     API_SECRET = credentials['API_SECRET']
 
 # API live endpoint URL
-api_base_url = "https://dvs-api.dtone.com/v1"  
+api_base_url = "https://dvs-api.dtone.com/v1"
+
+# # Test API endpoint URL
+# api_base_url = "https://preprod-dvs-api.dtone.com/v1"
 
 # Read the Excel file and load the transaction IDs into a list
 excel_file_path = "transaction_log.xlsx"  # Replace with your file path
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel(excel_file_path, dtype={'Response ID': str})
 transaction_ids = df['Response ID'].tolist()  
 mobile_numbers = df['Mobile Number'].tolist()
 
@@ -31,7 +35,7 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
     
     # Construct the request URL
     url = f"{api_base_url}/transactions/{transaction_id}"
-    
+
     # Make the GET request with Basic Auth
     response = requests.get(url, auth=HTTPBasicAuth(API_KEY, API_SECRET))
     
@@ -46,6 +50,10 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
         creation_date = transaction_status.get("creation_date")
         status_message = transaction_status.get("status", {}).get("message")
         product_name = transaction_status.get("product", {}).get("name")
+        operator_name = transaction_status.get("product", {}).get("operator").get("name")
+        destination = transaction_status.get("requested_values", {}).get("destination",{})
+        destination_amount = destination.get("amount", None)
+        destination_currency = destination.get("unit", None)
         mobile_number = transaction_status.get("beneficiary", {}).get("mobile_number")
 
         print(status_message)
@@ -57,17 +65,23 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
             "External ID": external_id,
             "Creation Date": creation_date,
             "Status Message": status_message,
-            "Product Name": product_name
+            "Product Name": product_name,
+            "Operator Name": operator_name,
+            "Requested amount": destination_amount,
+            "Requested currency": destination_currency
         })
     else:
         # Append the failed result to the list
         results.append({
             "Transaction ID": transaction_id,
-            "Mobile Number": mobile_numbers[index],
+            "Mobile Number": mobile_numbers[index-1],
             "External ID": None,
             "Creation Date": None,
             "Status Message": f"Failed to retrieve status. HTTP Status Code: {response.status_code}",
-            "Product Name": None
+            "Product Name": None,
+            "Operator Name": None,
+            "Requested amount": None,
+            "Requested currency": None
         })
 
 # Convert the results list to a DataFrame

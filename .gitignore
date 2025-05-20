@@ -3,6 +3,7 @@
 
 # Ignore sensitive API credentials
 api_credentials.json
+api_credentials_test.json
 
 # Ignore all Excel files
 *.xlsx

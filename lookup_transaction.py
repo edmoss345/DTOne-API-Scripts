@@ -11,10 +11,12 @@ with open('api_credentials.json', 'r') as file:
 # API live endpoint URL
 api_base_url = "https://dvs-api.dtone.com/v1"  
 
-transaction_id = "7461865111"
+transaction_id = "7482496407"
 
 # Construct the request URL
 url = f"{api_base_url}/transactions/{transaction_id}"
+
+print(url)
 
 # Make the GET request with Basic Auth
 response = requests.get(url, auth=HTTPBasicAuth(API_KEY, API_SECRET))

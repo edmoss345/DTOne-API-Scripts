@@ -14,8 +14,8 @@ with open('api_credentials.json', 'r') as file:
 url = "https://dvs-api.dtone.com/v1/async/transactions"  
 
 # Load the data from the Excel spreadsheet
-file_path = 'C:/Users/edmun/OneDrive - EEM Engineering Ltd/IDEMS/RCT/1 Month Payments.xlsx'  # Replace with the path to your Excel file
-df = pd.read_excel(file_path, sheet_name='Tel Number Payments to Make')
+file_path = 'C:/Users/edmun/OneDrive - EEM Engineering Ltd/IDEMS/RCT/7 Month Payments.xlsx'  # Replace with the path to your Excel file
+df = pd.read_excel(file_path, sheet_name='Follow Payments to Make')
 
 # Create a new Excel workbook for logging
 log_wb = Workbook()

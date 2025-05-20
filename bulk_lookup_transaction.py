@@ -1,25 +1,33 @@
+import sys
+from os import getenv
 import requests
 from requests.auth import HTTPBasicAuth
 import pandas as pd
 import json
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+DTONE_CREDENTIALS_FILE = getenv("DTONE_CREDENTIALS_FILE", "api_credentials.json")
+DTONE_API_URL = getenv("DTONE_API_URL")
+TRANSACTIONS_FILE=(
+    (len(sys.argv) > 1 and sys.argv[1])
+    or getenv("TRANSACTIONS_FILE", "transaction_log.xlsx")
+)
+OUTPUT_FILE=getenv("OUTPUT_FILE", "transaction_completion_log.xlsx")
+
 # Load API credentials from a separate JSON file
-with open('api_credentials.json', 'r') as file:
-# with open('api_credentials_test.json', 'r') as file:
+with open(DTONE_CREDENTIALS_FILE, 'r') as file:
     credentials = json.load(file)
     API_KEY = credentials['API_KEY']
     API_SECRET = credentials['API_SECRET']
 
-# API live endpoint URL
-api_base_url = "https://dvs-api.dtone.com/v1"
-
-# # Test API endpoint URL
-# api_base_url = "https://preprod-dvs-api.dtone.com/v1"
-
 # Read the Excel file and load the transaction IDs into a list
-excel_file_path = "transaction_log.xlsx"  # Replace with your file path
+excel_file_path = TRANSACTIONS_FILE
 df = pd.read_excel(excel_file_path, dtype={'Response ID': str})
-transaction_ids = df['Response ID'].tolist()  
+transaction_ids = df['Response ID'].tolist()
 mobile_numbers = df['Mobile Number'].tolist()
 
 # List to store transaction results
@@ -34,7 +42,7 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
     print(f"Reviewing record {index} of {total_transactions}")
     
     # Construct the request URL
-    url = f"{api_base_url}/transactions/{transaction_id}"
+    url = f"{DTONE_API_URL}/transactions/{transaction_id}"
 
     # Make the GET request with Basic Auth
     response = requests.get(url, auth=HTTPBasicAuth(API_KEY, API_SECRET))
@@ -88,7 +96,6 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
 results_df = pd.DataFrame(results)
 
 # Save the DataFrame to an Excel file
-output_excel_file_path = "transaction_completion_log.xlsx"  # Name of the output Excel file
-results_df.to_excel(output_excel_file_path, index=False)
+results_df.to_excel(OUTPUT_FILE, index=False)
 
-print(f"Results have been saved to {output_excel_file_path}")
+print(f"Results have been saved to {OUTPUT_FILE}")

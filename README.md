@@ -1,18 +1,21 @@
 # DTOne API Scripts
-This repo has a number of scripts that can be used to make or query transactions using the DTOne API. 
+
+This repo has a number of scripts that can be used to make or query transactions using the DTOne API.
 
 ## Prerequisites
 
 Before running the script, ensure you have the following:
 
 1. **Python 3.x** installed on your system.
-2. Required Python libraries: `pandas`, `requests`, `openpyxl`.
-3. A JSON file containing your API credentials named `api_credentials.json`. The file should be structured as follows:
-   ```json
-   {
-       "API_KEY": "your_api_key",
-       "API_SECRET": "your_api_secret"
-   }
+1. Required Python libraries in 'requirements.txt'.
+1. A JSON file containing your API credentials named `api_credentials.json`. The file should be structured as follows:
+    ```json
+    {
+        "API_KEY": "your_api_key",
+        "API_SECRET": "your_api_secret"
+    }
+    ```
+1. Copy the file 'dotenv\_example' to '.env' and edit, if necessary
 
 It is recommended to run the script within a Python virtual environment to manage dependencies. To set up and activate a virtual environment:
 
@@ -20,7 +23,7 @@ It is recommended to run the script within a Python virtual environment to manag
 2. Activate the environment:
     - Linux: `source .venv/bin/activate`
     - Windows: `.venv/Scripts/activate`
-3. Install required dependencies `pip install pandas requests openpyxl`
+3. Install required dependencies `pip install -r requirements.txt`
 
 # Send Payments Script (`send_payments.py`)
 This Python script automates the process of sending payment requests to the DTOne API. It reads payment details from an Excel spreadsheet, sends the payment requests via HTTP POST, and logs the responses in a new Excel file.
@@ -68,16 +71,17 @@ It is important to review and update the Excel file before running the script to
 This Python script retrieves the status of previously initiated transactions from the DTOne API. It reads transaction IDs from an Excel file, makes API requests to retrieve the current status of each transaction, and logs the results in a new Excel file.
 
 ## Excel File
-The script reads transaction IDs and mobile numbers from an Excel file (transaction_log.xlsx). Update the script to point to the correct file path by modifying this line:
+The script reads transaction IDs and mobile numbers from an Excel file. By default, a file called 'transaction\_log.xlsx', in the current directory, will be read. To specify a different file, do one of the following (in order of precedence):
 
-excel_file_path = "path/to/your/excel/transaction_log.xlsx"
+- Pass the path to the file as the first argument to the script e.g `python -m bulk_lookup_transaction file.xlsx`
+- Set the `TRANSACTION_FILE` environment variable e.g. in the '.env' file
 
 The Excel file should contain the following columns:
 - Response ID: The transaction ID used to query the status.
 - Mobile Number: The mobile number associated with the transaction.
 
 ## Output
-The results of the status review will be saved in a new Excel file, transaction_completion_log.xlsx, containing the following columns:
+The results of the status review will be saved in a new Excel file, transaction\_completion\_log.xlsx, containing the following columns:
 - Transaction ID: The transaction ID queried from the API.
 - Mobile Number: The associated mobile number from the original Excel file.
 - External ID: The external ID of the transaction (if available).
@@ -88,15 +92,17 @@ The results of the status review will be saved in a new Excel file, transaction_
 Console Output: The script will print progress and status messages for each transaction, indicating whether the status was successfully retrieved or if the request failed.
 
 ## How to Run
-Ensure your api_credentials.json file and the Excel file with transaction data are in the same directory as the script.
+Ensure your api\_credentials.json file and the Excel file with transaction data are in the same directory as the script.
 
 Run the script using Python:
 
-`python review_transactions.py`
+```
+python -m bulk_lookup_transation
+```
 
 The script will:
 
 - Load the API credentials from api_credentials.json.
 - Read the transaction IDs and mobile numbers from the Excel file.
 - Query the DTOne API for each transaction’s status.
-- Save the results in a new Excel file (transaction_completion_log.xlsx).
+- Save the results in a new Excel file (transaction\_completion\_log.xlsx).

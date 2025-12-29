@@ -1,108 +1,181 @@
 # DTOne API Scripts
 
-This repo has a number of scripts that can be used to make or query transactions using the DTOne API.
+This repository contains Python scripts for **sending payments** and **querying transaction status** using the DTOne API. The scripts are designed to work together using Excel files for input and output, and environment variables for configuration.
+
+---
 
 ## Prerequisites
 
-Before running the script, ensure you have the following:
+Before running the scripts, ensure you have:
 
-1. **Python 3.x** installed on your system.
-1. Required Python libraries in 'requirements.txt'.
-1. A JSON file containing your API credentials named `api_credentials.json`. The file should be structured as follows:
-    ```json
-    {
-        "API_KEY": "your_api_key",
-        "API_SECRET": "your_api_secret"
-    }
-    ```
-1. Copy the file 'dotenv\_example' to '.env' and edit, if necessary
+1. **Python 3.9+** installed
+2. All required Python libraries listed in `requirements.txt`
+3. One or more DTOne API credential JSON files (for test and/or production)
+4. A `.env` file for configuration (see below)
 
-It is recommended to run the script within a Python virtual environment to manage dependencies. To set up and activate a virtual environment:
+It is recommended to run the scripts inside a Python virtual environment.
 
-1. Create a virtual environment `python -m venv .venv`
-2. Activate the environment:
-    - Linux: `source .venv/bin/activate`
-    - Windows: `.venv/Scripts/activate`
-3. Install required dependencies `pip install -r requirements.txt`
+### Virtual environment setup
 
-# Send Payments Script (`send_payments.py`)
-This Python script automates the process of sending payment requests to the DTOne API. It reads payment details from an Excel spreadsheet, sends the payment requests via HTTP POST, and logs the responses in a new Excel file.
+```bash
+python -m venv .venv
+```
 
-## Excel File
-The script reads payment details from an Excel file. Update the script to point to the correct file path by modifying this line:
+Activate the environment:
+- **Linux / macOS**: `source .venv/bin/activate`
+- **Windows**: `.venv\Scripts\activate`
 
-file_path = 'path/to/your/excel/file.xlsx'
+Install dependencies:
 
-The Excel file should have the following columns:
-- NEW EXTERNAL ID: External ID for each transaction.
-- PRODUCT ID: The product ID for the payment.
-- CREDIT PARTY MOBILE NUMBER: The mobile number to which the payment is sent.
-- Make Payment with Script: A boolean (True/False) column to indicate whether to send payment for that row.
+```bash
+pip install -r requirements.txt
+```
 
-### Logging
-A log of the payment transactions is saved as transaction_log.xlsx. It includes the transaction number, mobile number, status, external ID, response ID, and response message.
+---
 
-### How to Run
-Ensure your api_credentials.json file, the Excel file with payment data, and the send_payments.py script are in the same directory.
+## Environment Configuration (`.env` file)
 
-Run the script using Python:
+All runtime configuration is handled via environment variables loaded from a `.env` file. Copy `dotenv_example` to `.env` and update as needed.
 
-`python send_payments.py`
+### Example `.env`
 
-The script will:
-- Load the API credentials from api_credentials.json.
-- Read payment data from the Excel file.
-- Send a payment request for each row flagged for payment.
-- Log the transaction status and responses in a new Excel file (transaction_log.xlsx).
+```env
+# DTOne API base URL (test or production)
+DTONE_API_URL=https://preprod-dvs-api.dtone.com/v1
+
+# Path to API credentials file (JSON)
+DTONE_CREDENTIALS_FILE=api_credentials_test.json
+
+# Excel input / output files
+PAYMENTS_FILE=Example payments.xlsx
+TRANSACTIONS_FILE=transaction_log.xlsx
+COMPLETION_LOG=transaction_completion_log.xlsx
+```
+
+> **Note:** The scripts use `load_dotenv(override=True)`, so values in `.env` will override any system environment variables.
+
+---
+
+## API Credentials File
+
+The credentials file referenced by `DTONE_CREDENTIALS_FILE` must be a JSON file with the following structure:
+
+```json
+{
+  "API_KEY": "your_api_key",
+  "API_SECRET": "your_api_secret"
+}
+```
+
+Keep credential files out of version control.
+
+---
+
+## Send Payments Script (`send_payments.py`)
+
+### Purpose
+
+This script sends asynchronous payment requests to the DTOne API based on data in an Excel spreadsheet, and logs the API responses to a transaction log file.
+
+### Input Excel File
+
+The Excel file specified by `PAYMENTS_FILE` must contain a sheet named **`Payments to Make`** with the following columns:
+
+- **NEW EXTERNAL ID** – External reference for the transaction
+- **PRODUCT ID** – DTOne product ID
+- **CREDIT PARTY MOBILE NUMBER** – Mobile number to credit (without `+`)
+- **Make Payment with Script** – Boolean flag (TRUE/FALSE)
+
+Only rows where **Make Payment with Script** is `TRUE` will be processed.
 
 ### Output
-Console Output: The script will print information about each transaction, indicating whether the payment request was successful or failed.
 
-Excel Log: A file called transaction_log.xlsx will be generated, containing a log of all payment transactions. This is also the default file path used by the 'transaction lookup' script (see below). So that script can be run immediately after to check the status of all transactions.
+- An Excel file defined by `TRANSACTIONS_FILE` (default: `transaction_log.xlsx`)
+- The log includes:
+  - Transaction number
+  - Mobile number
+  - Status (Success / Failed)
+  - External ID
+  - Response ID
+  - Response message
 
-### Error Handling
-If a payment request fails (e.g., the API returns a non-201 status code), the error message and the status code will be logged in the console and the log file.
+This file is used as input for the lookup script.
+
+### How to Run
+
+```bash
+python send_payments.py
+```
 
 ### Notes
-The script uses HTTP Basic Authentication with credentials stored in api_credentials.json.
-It is important to review and update the Excel file before running the script to ensure only intended payments are made.
 
-# Lookup Transactions Script (`bulk_lookup_transaction.py`)
-This Python script retrieves the status of previously initiated transactions from the DTOne API. It reads transaction IDs from an Excel file, makes API requests to retrieve the current status of each transaction, and logs the results in a new Excel file.
+- Uses HTTP Basic Authentication
+- Payments are submitted asynchronously
+- Always review the Excel file before running to avoid unintended payments
 
-## Excel File
-The script reads transaction IDs and mobile numbers from an Excel file. By default, a file called 'transaction\_log.xlsx', in the current directory, will be read. To specify a different file, do one of the following (in order of precedence):
+---
 
-- Pass the path to the file as the first argument to the script e.g `python -m bulk_lookup_transaction file.xlsx`
-- Set the `TRANSACTION_FILE` environment variable e.g. in the '.env' file
+## Lookup Transactions Script (`bulk_lookup_transaction.py`)
 
-The Excel file should contain the following columns:
-- Response ID: The transaction ID used to query the status.
-- Mobile Number: The mobile number associated with the transaction.
+### Purpose
 
-## Output
-The results of the status review will be saved in a new Excel file, transaction\_completion\_log.xlsx, containing the following columns:
-- Transaction ID: The transaction ID queried from the API.
-- Mobile Number: The associated mobile number from the original Excel file.
-- External ID: The external ID of the transaction (if available).
-- Creation Date: The date the transaction was created.
-- Status Message: The current status message of the transaction.
-- Product Name: The name of the product associated with the transaction.
+This script queries the DTOne API for the status of previously submitted transactions and produces a completion report.
 
-Console Output: The script will print progress and status messages for each transaction, indicating whether the status was successfully retrieved or if the request failed.
+### Input Excel File
 
-## How to Run
-Ensure your api\_credentials.json file and the Excel file with transaction data are in the same directory as the script.
+By default, the script reads from the file defined by `TRANSACTIONS_FILE` (usually `transaction_log.xlsx`).
 
-Run the script using Python:
+The file must contain the following columns:
 
+- **Response ID** – Transaction ID returned by DTOne
+- **Mobile Number** – Associated mobile number
+
+### Output
+
+An Excel file defined by `COMPLETION_LOG` (default: `transaction_completion_log.xlsx`) containing:
+
+- Transaction ID
+- Mobile Number
+- External ID
+- Creation Date
+- Status Message
+- Product Name
+- Operator Name
+- Requested amount
+- Requested currency
+
+### How to Run
+
+```bash
+python bulk_lookup_transaction.py
 ```
-python -m bulk_lookup_transation
-```
 
-The script will:
+### Console Output
 
-- Load the API credentials from api_credentials.json.
-- Read the transaction IDs and mobile numbers from the Excel file.
-- Query the DTOne API for each transaction’s status.
-- Save the results in a new Excel file (transaction\_completion\_log.xlsx).
+The script prints progress information for each transaction and indicates whether the lookup succeeded or failed.
+
+---
+
+## Typical Workflow
+
+1. Configure `.env` and credentials
+2. Prepare the payments Excel file
+3. Run `send_payments.py`
+4. Wait for DTOne to process transactions
+5. Run `bulk_lookup_transaction.py`
+6. Review the completion log
+
+---
+
+## Troubleshooting
+
+- **Wrong environment used**: Verify `DTONE_API_URL` in `.env`
+- **Authentication errors**: Ensure credentials match the selected environment
+- **Excel errors**: Confirm file paths, sheet names, and column headers
+
+---
+
+## License
+
+Internal / private use only
+

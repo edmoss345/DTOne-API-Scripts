@@ -1,11 +1,15 @@
 # API URL for DTOne production environment
-DTONE_API_URL=https://dvs-api.dtone.com/v1
+# DTONE_API_URL=https://dvs-api.dtone.com/v1
+
+# Environment credentials
+# DTONE_CREDENTIALS_FILE=api_credentials.json
 
 # API URL for DTOne test environment
-# DTONE_API_URL=https://preprod-dvs-api.dtone.com/v1
+DTONE_API_URL=https://preprod-dvs-api.dtone.com/v1
 
 # Test environment credentials
-# DTONE_CREDENTIALS_FILE=api_credentials_test.json
+DTONE_CREDENTIALS_FILE=api_credentials_test.json
 
-# TRANSACTIONS_FILE=transaction_log.xlsx
-# OUTPUT_FILE=transaction_completion_log.xlsx
+PAYMENTS_FILE=Example payments.xlsx
+TRANSACTIONS_FILE=transaction_log.xlsx
+COMPLETION_LOG=transaction_completion_log.xlsx

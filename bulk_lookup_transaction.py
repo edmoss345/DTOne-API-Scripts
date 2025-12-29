@@ -7,16 +7,12 @@ import json
 
 from dotenv import load_dotenv
 
+load_dotenv(override=True)
 
-load_dotenv()
-
-DTONE_CREDENTIALS_FILE = getenv("DTONE_CREDENTIALS_FILE", "api_credentials.json")
+DTONE_CREDENTIALS_FILE = getenv("DTONE_CREDENTIALS_FILE")
 DTONE_API_URL = getenv("DTONE_API_URL")
-TRANSACTIONS_FILE=(
-    (len(sys.argv) > 1 and sys.argv[1])
-    or getenv("TRANSACTIONS_FILE", "transaction_log.xlsx")
-)
-OUTPUT_FILE=getenv("OUTPUT_FILE", "transaction_completion_log.xlsx")
+TRANSACTIONS_FILE= getenv("TRANSACTIONS_FILE", "transaction_log.xlsx")
+COMPLETION_LOG=getenv("COMPLETION_LOG", "transaction_completion_log.xlsx")
 
 # Load API credentials from a separate JSON file
 with open(DTONE_CREDENTIALS_FILE, 'r') as file:
@@ -96,6 +92,6 @@ for index, transaction_id in enumerate(transaction_ids, start=1):
 results_df = pd.DataFrame(results)
 
 # Save the DataFrame to an Excel file
-results_df.to_excel(OUTPUT_FILE, index=False)
+results_df.to_excel(COMPLETION_LOG, index=False)
 
-print(f"Results have been saved to {OUTPUT_FILE}")
+print(f"Results have been saved to {COMPLETION_LOG}")
